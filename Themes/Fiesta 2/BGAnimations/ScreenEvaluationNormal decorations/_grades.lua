@@ -100,6 +100,7 @@ end;
 
 -- Sounds
 local BestGrade;
+local UseBroken;
 
 if p1_joined and p2_joined then
 	if p1_grade > p2_grade then
@@ -111,22 +112,30 @@ end;
 
 if p1_joined and not p2_joined then
 	BestGrade = p1_grade;
+	UseBroken = stage_break[PLAYER_1];
 end;
 
 if not p1_joined and p2_joined then
 	BestGrade = p2_grade;
+	UseBroken = stage_break[PLAYER_2];
 end;
 
 local grade_sound = piu_grades[BestGrade]
 t[#t+1] = Def.Sound {
 	InitCommand=function(self)
-		self:load(THEME:GetPathS('','Rank/RANK_'..piu_grades_old[BestGrade]..'.mp3'));
+		-- check if broken sound exists
+		if UseBroken and THEME:GetPathS('','Rank/RANK_BROKEN_'..piu_grades_old[BestGrade]..'.mp3') then
+			self:load(THEME:GetPathS('','Rank/RANK_BROKEN_'..piu_grades_old[BestGrade]..'.mp3'));
+		else
+			self:load(THEME:GetPathS('','Rank/RANK_'..piu_grades_old[BestGrade]..'.mp3'));
+		end;
 	end;
 	OnCommand=cmd(sleep,t_sleep+.2;queuecommand,'Play');
 	PlayCommand=cmd(play);
 	GoNextScreenMessageCommand=cmd(pause);
 };
 
+-- Background
 t[#t+1] = Def.Sound {
 	InitCommand=function(self)
 		self:load(THEME:GetPathS('','Rank/RANK_'..piu_grades_old[BestGrade]..'_B.mp3'));
@@ -136,6 +145,7 @@ t[#t+1] = Def.Sound {
 	GoNextScreenMessageCommand=cmd(pause);
 };
 
+-- BOOM rank sound
 t[#t+1] = Def.Sound {
 	InitCommand=function(self)
 		self:load(THEME:GetPathS('','Rank/RANK.mp3'));
